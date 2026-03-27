@@ -1,0 +1,13 @@
+
+# IGNORE DATA FILES
+data/raw/*
+data/processed/*
+data/results/*
+
+# KEEP DATA FOLDERS
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/results/.gitkeep
+
+
+.vscode/
