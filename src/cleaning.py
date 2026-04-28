@@ -10,6 +10,11 @@ from src.cleaning import clean_apc
 
 apc = clean_apc('../data/raw/apc.csv')
 
+out[]:
+        before (1598279, 27)
+        after (1598277, 17)
+        Saved to ../data/processed/
+
 """
 
 def clean_apc(filepath):
