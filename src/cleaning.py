@@ -1,5 +1,17 @@
 import pandas as pd
 
+"""
+############### How to use - Example ##############
+
+import sys
+sys.path.append('..')
+
+from src.cleaning import clean_apc
+
+apc = clean_apc('../data/raw/apc.csv')
+
+"""
+
 def clean_apc(filepath):
     apc = pd.read_csv(filepath, sep=";", encoding='latin-1')
 
