@@ -7,10 +7,22 @@ def build_features(apc_clean):
     """
 
     df = apc_clean.copy()
+    df = add_datetime_features(df)
     df = add_pism_features(df)
     df = add_trip_features(df)
     df = add_context_features(df)
 
+    return df
+
+
+def add_datetime_features(df):
+    """
+        Parse the arrival timestamp into datetime, date, hour, weekday.
+    """
+    df['arrival_dt'] = pd.to_datetime(df['arrival'], format='%d/%m/%Y %H:%M:%S')
+    df['date']       = df['arrival_dt'].dt.date
+    df['hour']       = df['arrival_dt'].dt.hour
+    df['weekday']    = df['arrival_dt'].dt.dayofweek   # 0=Monday, 6=Sunday
     return df
 
 
@@ -29,15 +41,15 @@ def  add_pism_features(df):
 
 def add_trip_features(df):
     """
-        Add trip-level features by grouping on (vehicleCode, trip).
+        Add trip-level features by grouping on (vehicleCode, trip, date).
         Each feature is broadcast to every row in the same trip.
     """
 
     # Make sure rows are in chronological order within each trip
-    df = df.sort_values(['vehicleCode', 'trip', 'arrival']).reset_index(drop=True)
+    df = df.sort_values(['vehicleCode', 'trip', 'date','arrival_dt']).reset_index(drop=True)
     
     # Per-row load = running sum of (boardings - alightings) within each trip
-    grp = df.groupby(['vehicleCode', 'trip'])
+    grp = df.groupby(['vehicleCode', 'trip', 'date'])
 
     df['load'] = grp.apply(
         lambda g: (g['boardings'] - g['alightings']).cumsum()
@@ -59,11 +71,6 @@ def add_context_features(df):
     Add contextual features that compare each row/trip to what is "normal"
     in its context (stop, hour, line, weekday).
     """
-    
-    # ----- Helper columns -----
-    df['arrival_dt'] = pd.to_datetime(df['arrival'], format='%d/%m/%Y %H:%M:%S')
-    df['hour']       = df['arrival_dt'].dt.hour
-    df['weekday']    = df['arrival_dt'].dt.dayofweek      # 0=Monday, 6=Sunday
     
     # ----- Feature 1: boardings z-score for (pointCode, hour, weekday) -----
     grp = df.groupby(['pointCode', 'hour', 'weekday'])
