@@ -53,7 +53,7 @@ def add_trip_features(df):
 
     df['load'] = grp.apply(
         lambda g: (g['boardings'] - g['alightings']).cumsum()
-    ).reset_index(level=[0,1], drop=True)
+    ).reset_index(level=[0,1,2], drop=True)
     
     # Trip-level aggregates (broadcast to all rows in the trip)
     df['trip_total_boardings']  = grp['boardings'].transform('sum')
