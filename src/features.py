@@ -12,6 +12,9 @@ def build_features(apc_clean):
     df = add_trip_features(df)
     df = add_context_features(df)
 
+    df.to_csv('../data/processed/apc_features.csv', sep=';', index = False, encoding = 'latin-1')
+    print("Saved to ../data/processed/apc_features.csv")
+
     return df
 
 
